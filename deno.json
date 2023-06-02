@@ -3,5 +3,6 @@
     "watch": "deno run --watch --allow-net --allow-env --allow-read --allow-write main.ts",
     "start": "deno run --allow-net --allow-env --allow-read --allow-write main.ts",
     "compile": "deno compile --allow-net --allow-env --allow-read --allow-write main.ts"
-  }
+  },
+  "lock": false
 }
