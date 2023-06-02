@@ -23,7 +23,7 @@ jobs:
         run: |
           cp coeiroink-v2-bridge.exe ./build_resources/
           cd build_resources
-          compress-archive . ../coeiroink-bridge-${{ github.ref_name }}.vvpp
+          compress-archive * ../coeiroink-bridge-${{ github.ref_name }}.vvpp
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
