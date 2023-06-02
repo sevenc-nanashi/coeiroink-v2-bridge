@@ -30,6 +30,6 @@ jobs:
         with:
           files: |
             coeiroink-bridge-${{ github.ref_name }}.vvpp
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
