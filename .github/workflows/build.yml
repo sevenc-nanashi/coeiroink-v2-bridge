@@ -19,7 +19,7 @@ jobs:
         run: deno task compile
       - name: Pack
         run: |
-          cp coeiroink-bridge.exe ./build_resources/
+          cp coeiroink-v2-bridge.exe ./build_resources/
           cd build_resources
           compress-archive . ../coeiroink-bridge-$GITHUB_REF.vvpp
 
