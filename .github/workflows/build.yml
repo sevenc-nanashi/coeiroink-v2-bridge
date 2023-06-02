@@ -22,6 +22,7 @@ jobs:
       - name: Pack
         run: |
           cp coeiroink-v2-bridge.exe ./build_resources/
+          cp providers/icon.png ./build_resources/
           cd build_resources
           compress-archive * ../coeiroink-bridge-${{ github.ref_name }}.vvpp
 

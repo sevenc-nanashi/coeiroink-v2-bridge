@@ -1,4 +1,4 @@
-import { toBase64 } from "../deps.ts";
+import { dirname, toBase64 } from "../deps.ts";
 import { getIdFromSpeaker, getOrAppendSpeaker } from "../speakerMap.ts";
 import { Provider } from "./index.ts";
 
@@ -33,7 +33,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
       brand_name: "COEIROINK v2",
       uuid: "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
       url: "https://github.com/sevenc-nanashi/coeiroink-v2-bridge",
-      icon: await Deno.readFile(new URL("./icon.png", import.meta.url)).then(
+      icon: await Deno.readFile(dirname(Deno.execPath()) + "icon.png").then(
         (buf) => toBase64(buf)
       ),
       default_sampling_rate: 24000,
