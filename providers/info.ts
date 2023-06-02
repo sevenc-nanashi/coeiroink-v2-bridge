@@ -22,8 +22,9 @@ const infoProvider: Provider = ({ baseClient, app }) => {
     return c.json("0.0.1");
   });
 
-  app.get("/supported_devices", (c) =>
-    c.json({ cpu: true, cuda: false, dml: false })
+  app.get(
+    "/supported_devices",
+    (c) => c.json({ cpu: true, cuda: false, dml: false }),
   );
 
   app.get("/engine_manifest", async (c) => {
@@ -33,8 +34,12 @@ const infoProvider: Provider = ({ baseClient, app }) => {
       brand_name: "COEIROINK v2",
       uuid: "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
       url: "https://github.com/sevenc-nanashi/coeiroink-v2-bridge",
-      icon: await Deno.readFile(dirname(Deno.execPath()) + "icon.png").then(
-        (buf) => toBase64(buf)
+      icon: await Deno.readFile(
+        Deno.execPath().endsWith("deno.exe")
+          ? new URL("./icon.png", import.meta.url)
+          : dirname(Deno.execPath()) + "/icon.png",
+      ).then(
+        (buf) => toBase64(buf),
       ),
       default_sampling_rate: 24000,
       terms_of_service: "https://coeiroink.com/terms を参照して下さい。",
@@ -87,18 +92,18 @@ const infoProvider: Provider = ({ baseClient, app }) => {
             speaker.styles.map(async (style) => ({
               name: style.styleName,
               id: await getOrAppendSpeaker(speaker.speakerUuid, style.styleId),
-            }))
+            })),
           ),
           version: speaker.version,
-        }))
-      )
+        })),
+      ),
     );
   });
 
   app.get("/speaker_info", (c) => {
     const speakerUuid = c.req.query("speaker_uuid");
     const speaker = speakers.find(
-      (speaker) => speaker.speakerUuid === speakerUuid
+      (speaker) => speaker.speakerUuid === speakerUuid,
     );
     if (!speaker || !speakerUuid) {
       c.status(404);
