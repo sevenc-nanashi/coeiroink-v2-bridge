@@ -1,0 +1,7 @@
+{
+  "name": "COEIROINK v2 bridge",
+  "uuid": "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
+  "command": "coeiroink-bridge",
+  "port": 50132,
+  "supported_features": {}
+}

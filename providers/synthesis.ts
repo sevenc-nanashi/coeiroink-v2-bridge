@@ -2,6 +2,7 @@ import { wav } from "../deps.ts";
 import { Provider } from "./index.ts";
 import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
+import { getSpeakerFromId } from "../speakerMap.ts";
 
 type Prosody = {
   plain: string[];
@@ -121,7 +122,7 @@ const accentPhrasesToProsody = (accentPhrases: AccentPhrase[]) => {
   });
 };
 
-const synthesisProvider: Provider = ({ baseClient, app, idMap }) => {
+const synthesisProvider: Provider = ({ baseClient, app }) => {
   app.post("/accent_phrases", async (c) => {
     const text = c.req.query("text");
 
@@ -168,7 +169,7 @@ const synthesisProvider: Provider = ({ baseClient, app, idMap }) => {
     }
     const accentPhrases = audioQuery.accent_phrases;
     const prosody = accentPhrasesToProsody(accentPhrases);
-    const [speakerUuid, styleId] = idMap.get(speakerId) ?? ["", 0];
+    const [speakerUuid, styleId] = getSpeakerFromId(speakerId) ?? [];
     if (!speakerUuid) {
       c.status(400);
       return c.json({

@@ -7,7 +7,6 @@ const baseClient = ky.create({
   prefixUrl: "http://127.0.0.1:50032",
 });
 
-const idMap = new Map<number, [string, number]>();
 const app = new Hono();
 
 app.use("*", async (c, next) => {
@@ -21,7 +20,7 @@ app.options("*", (c) => {
 });
 
 [infoProvider, noopProvider, synthesisProvider].forEach((provider) =>
-  provider({ baseClient, app, idMap })
+  provider({ baseClient, app })
 );
 
 serve(app.fetch, { port: 50132 });

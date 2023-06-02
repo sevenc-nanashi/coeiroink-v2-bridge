@@ -1,3 +1,5 @@
+import { toBase64 } from "../deps.ts";
+import { getIdFromSpeaker, getOrAppendSpeaker } from "../speakerMap.ts";
 import { Provider } from "./index.ts";
 
 let speakers: {
@@ -13,7 +15,7 @@ let speakers: {
   }[];
 }[];
 
-const infoProvider: Provider = ({ baseClient, app, idMap }) => {
+const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", (c) => c.json("0.0.1"));
 
   app.get("/supported_devices", (c) =>
@@ -25,16 +27,14 @@ const infoProvider: Provider = ({ baseClient, app, idMap }) => {
       manifest_version: "0.13.1",
       name: "COEIROINK v2 @ bridge",
       brand_name: "COEIROINK v2",
-      uuid: "2576c6a0-1b0e-4b1e-9b0c-5b0b6b4b7b7b",
+      uuid: "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
       url: "https://github.com/sevenc-nanashi/coeiroink-v2-bridge",
-      icon: await Deno.readFile("./icon.png").then((buf) =>
-        btoa(String.fromCharCode(...buf))
-      ),
+      icon: await Deno.readFile("./icon.png").then((buf) => toBase64(buf)),
       default_sampling_rate: 24000,
       terms_of_service: "https://coeiroink.com/terms を参照して下さい。",
       update_infos: [
         {
-          version: "Info",
+          version: "情報について",
           descriptions: [
             "VOICEVOXアプリ内ではCOEIORINKの変更履歴を表示することができません。COEIROINK側のサイトを参照して下さい。",
             "この下のアップデート内容はCOEIROINK v2 bridgeのものです。",
@@ -71,26 +71,21 @@ const infoProvider: Provider = ({ baseClient, app, idMap }) => {
 
   app.get("/speakers", async (c) => {
     speakers = await baseClient.get("v1/speakers").json();
-    let i = -1;
-    for (const speaker of speakers) {
-      for (const style of speaker.styles) {
-        i++;
-        idMap.set(i, [speaker.speakerUuid, style.styleId]);
-      }
-    }
+
     return c.json(
-      speakers.map((speaker) => ({
-        name: speaker.speakerName,
-        speaker_uuid: speaker.speakerUuid,
-        styles: speaker.styles.map((style) => ({
-          name: style.styleName,
-          id: [...idMap.entries()].find(
-            ([_, [uuid, id]]) =>
-              uuid === speaker.speakerUuid && id === style.styleId
-          )![0],
-        })),
-        version: speaker.version,
-      }))
+      await Promise.all(
+        speakers.map(async (speaker) => ({
+          name: speaker.speakerName,
+          speaker_uuid: speaker.speakerUuid,
+          styles: await Promise.all(
+            speaker.styles.map(async (style) => ({
+              name: style.styleName,
+              id: await getOrAppendSpeaker(speaker.speakerUuid, style.styleId),
+            }))
+          ),
+          version: speaker.version,
+        }))
+      )
     );
   });
 
@@ -99,7 +94,7 @@ const infoProvider: Provider = ({ baseClient, app, idMap }) => {
     const speaker = speakers.find(
       (speaker) => speaker.speakerUuid === speakerUuid
     );
-    if (!speaker) {
+    if (!speaker || !speakerUuid) {
       c.status(404);
       return c.json({ error: "speaker not found" });
     }
@@ -107,9 +102,7 @@ const infoProvider: Provider = ({ baseClient, app, idMap }) => {
       policy: "https://coeiroink.com/terms を参照して下さい。",
       portrait: speaker.base64Portrait,
       style_infos: speaker.styles.map((style) => ({
-        id: [...idMap.entries()].find(
-          ([_, [uuid, id]]) => uuid === speakerUuid && id === style.styleId
-        )![0],
+        id: getIdFromSpeaker(speakerUuid, style.styleId),
         icon: style.base64Icon,
         portrait: style.base64Portrait,
         voice_samples: [],
