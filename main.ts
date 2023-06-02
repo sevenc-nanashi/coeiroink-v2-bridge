@@ -6,7 +6,7 @@ import synthesisProvider from "./providers/synthesis.ts";
 const args = parse(Deno.args, {
   string: ["host", "port", "originalUrl"],
   default: {
-    host: "localhost",
+    host: "127.0.0.1",
     port: "50132",
     originalUrl: "http://127.0.0.1:50032",
   },
