@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   build:
@@ -20,8 +20,8 @@ jobs:
       - name: Pack
         run: |
           cp coeiroink-bridge.exe ./build_resources/
-          zip -r coeiroink-bridge.zip ./build_resources/
-          mv coeiroink-bridge.zip coeiroink-bridge-$GITHUB_REF.vvpp
+          cd build_resources
+          compress-archive . ../coeiroink-bridge-$GITHUB_REF.vvpp
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -29,7 +29,5 @@ jobs:
           files: |
             coeiroink-bridge-$GITHUB_REF.vvpp
           tag_name: ${{ github.ref }}
-          body: |
-            Release ${{ github.ref }}
           draft: false
           prerelease: false

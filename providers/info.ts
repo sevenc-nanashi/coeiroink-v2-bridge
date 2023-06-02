@@ -29,7 +29,9 @@ const infoProvider: Provider = ({ baseClient, app }) => {
       brand_name: "COEIROINK v2",
       uuid: "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
       url: "https://github.com/sevenc-nanashi/coeiroink-v2-bridge",
-      icon: await Deno.readFile("./icon.png").then((buf) => toBase64(buf)),
+      icon: await Deno.readFile(new URL("./icon.png", import.meta.url)).then(
+        (buf) => toBase64(buf)
+      ),
       default_sampling_rate: 24000,
       terms_of_service: "https://coeiroink.com/terms を参照して下さい。",
       update_infos: [

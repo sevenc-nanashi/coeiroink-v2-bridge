@@ -4,6 +4,31 @@ COEIROINK v2 を VOICEVOX のマルチエンジンで読み込めるようにす
 
 ## 使い方
 
-WIP
-COEIROINK v2 を起動した後に、`deno task start`してください。
-Voicevox の.env をいじって`127.0.0.1:50132`を追加してください。UUID は`2576c6a0-1b0e-4b1e-9b0c-5b0b6b4b7b7b`です。
+1. [Releases](https://github.com/sevenc-nanashi/coeiroink-v2-bridge/releases) から最新の `coeiroink-v2-v0.0.0.vvpp` をダウンロードする
+2. vvpp を VOICEVOX に読み込ませる
+3. COEIROINK v2 を起動する
+
+## TODO
+
+- [ ] COEIROINK v2 の自動起動（ポートからプロセスを割り出す？）
+
+## 開発
+
+### 実行
+
+```
+deno task start
+
+# 監視モード
+deno task watch
+```
+
+### ビルド
+
+```
+deno task compile
+```
+
+## ライセンス
+
+MIT License で公開しています。

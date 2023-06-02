@@ -1,10 +1,18 @@
-import { Hono, ky, serve } from "./deps.ts";
+import { Hono, ky, parse, serve } from "./deps.ts";
 import infoProvider from "./providers/info.ts";
 import noopProvider from "./providers/noop.ts";
 import synthesisProvider from "./providers/synthesis.ts";
 
+const args = parse(Deno.args, {
+  string: ["host", "port", "originalUrl"],
+  default: {
+    host: "localhost",
+    port: "50132",
+    originalUrl: "http://127.0.0.1:50032",
+  },
+});
 const baseClient = ky.create({
-  prefixUrl: "http://127.0.0.1:50032",
+  prefixUrl: args.originalUrl,
 });
 
 const app = new Hono();
@@ -23,4 +31,4 @@ app.options("*", (c) => {
   provider({ baseClient, app })
 );
 
-serve(app.fetch, { port: 50132 });
+serve(app.fetch, { hostname: args.host, port: parseInt(args.port) });
