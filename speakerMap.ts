@@ -1,6 +1,6 @@
 import { homeDir } from "./deps.ts";
 
-const filePath = homeDir + ".coeiroink-v2-bridge-map.json"
+const filePath = homeDir + "/.coeiroink-v2-bridge-map.json"
 export const speakerMap: [number, [string, number]][] = JSON.parse(
   await Deno.readTextFile(filePath).catch(() => "[]")
 );
