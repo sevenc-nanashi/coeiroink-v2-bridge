@@ -16,7 +16,11 @@ let speakers: {
 }[];
 
 const infoProvider: Provider = ({ baseClient, app }) => {
-  app.get("/version", (c) => c.json("0.0.1"));
+  app.get("/version", async (c) => {
+    await baseClient.get("");
+
+    return c.json("0.0.1");
+  });
 
   app.get("/supported_devices", (c) =>
     c.json({ cpu: true, cuda: false, dml: false })
