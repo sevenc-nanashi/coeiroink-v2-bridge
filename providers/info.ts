@@ -19,7 +19,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", async (c) => {
     await baseClient.get("");
 
-    return c.json("0.0.1");
+    return c.json("0.1.0");
   });
 
   app.get(
@@ -51,6 +51,16 @@ const infoProvider: Provider = ({ baseClient, app }) => {
             "この下のアップデート内容はCOEIROINK v2 bridgeのものです。",
           ],
           contributors: [],
+        },
+        {
+          version: "0.1.0",
+          descriptions: [
+            "Update: COEIROINK v2正式版に追従",
+            "Add: 辞書読み込みを追加",
+            "Delete: outputSamplingRate周りのワークアラウンドを削除",
+            "Fix: pitchScaleをデフォルトで0に（by @itsuka-dev）",
+          ],
+          contributors: ["sevenc-nanashi", "itsuka-dev"],
         },
         {
           version: "0.0.1",
