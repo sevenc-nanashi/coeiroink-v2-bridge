@@ -148,7 +148,7 @@ const synthesisProvider: Provider = ({ baseClient, app }) => {
     return c.json({
       accent_phrases: prosodyToAccentPhrases(prosody),
       speedScale: 1,
-      pitchScale: 1,
+      pitchScale: 0,
       intonationScale: 1,
       volumeScale: 1,
       prePhonemeLength: 0.1,
