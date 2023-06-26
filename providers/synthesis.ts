@@ -1,4 +1,3 @@
-import { wav } from "../deps.ts";
 import { Provider } from "./index.ts";
 import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
@@ -187,42 +186,18 @@ const synthesisProvider: Provider = ({ baseClient, app }) => {
       intonationScale: audioQuery.intonationScale,
       prePhonemeLength: audioQuery.prePhonemeLength,
       postPhonemeLength: audioQuery.postPhonemeLength,
-      outputSamplingRate: audioQuery.outputSamplingRate * 2,
+      outputSamplingRate: audioQuery.outputSamplingRate,
     };
     const result = await baseClient.post("v1/synthesis", {
       json: body,
     });
-    if (!result.body) {
+    if (!result.ok) {
       c.status(500);
       return c.json({
         error: "synthesis failed",
       });
     }
-    const parser = new wav.Reader();
-    const writer = new wav.Writer({
-      sampleRate: audioQuery.outputStereo
-        ? audioQuery.outputSamplingRate
-        : audioQuery.outputSamplingRate * 2,
-      channels: audioQuery.outputStereo ? 2 : 1,
-      bitDepth: 16,
-    });
-    // @ts-expect-error Somehow the types are wrong
-    Readable.fromWeb(result.body).pipe(parser);
-    parser.on("error", (err) => {
-      console.error(err);
-    });
-    parser.pipe(writer);
-    const resampled = await new Promise<Buffer>((resolve) => {
-      const chunks: Buffer[] = [];
-      writer.on("data", (chunk) => {
-        chunks.push(chunk);
-      });
-      writer.on("end", () => {
-        resolve(Buffer.concat(chunks));
-      });
-    });
-
-    return c.body(new Uint8Array(resampled));
+    return c.body(result.body);
   });
 };
 
