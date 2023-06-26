@@ -1,4 +1,5 @@
-import { Hono, ky, parse, serve } from "./deps.ts";
+import { Hono, honoLogger, ky, parse, serve } from "./deps.ts";
+import dictProvider from "./providers/dict.ts";
 import infoProvider from "./providers/info.ts";
 import noopProvider from "./providers/noop.ts";
 import synthesisProvider from "./providers/synthesis.ts";
@@ -17,6 +18,8 @@ const baseClient = ky.create({
 
 const app = new Hono();
 
+app.use("*", honoLogger());
+
 app.use("*", async (c, next) => {
   await next();
   c.res.headers.set("Access-Control-Allow-Origin", "*");
@@ -27,8 +30,8 @@ app.options("*", (c) => {
   return c.text("", 200);
 });
 
-[infoProvider, noopProvider, synthesisProvider].forEach((provider) =>
-  provider({ baseClient, app })
-);
+[infoProvider, noopProvider, synthesisProvider, dictProvider].forEach((
+  provider,
+) => provider({ baseClient, app }));
 
 serve(app.fetch, { hostname: args.host, port: parseInt(args.port) });

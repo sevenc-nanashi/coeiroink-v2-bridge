@@ -1,4 +1,5 @@
 export { Hono } from "https://deno.land/x/hono@v3.2.3/mod.ts";
+export { logger as honoLogger } from "https://deno.land/x/hono@v3.2.3/middleware.ts";
 export { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 export { parse } from "https://deno.land/std@0.190.0/flags/mod.ts";
 export { dirname } from "https://deno.land/std@0.190.0/path/mod.ts";
