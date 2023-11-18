@@ -29,6 +29,7 @@ jobs:
       - name: Compile
         run: deno task compile
       - name: Pack
+        shell: bash
         run: |
           cp coeiroink-v2-bridge.exe ./build_resources/ || true
           cp coeiroink-v2-bridge ./build_resources/ || true
