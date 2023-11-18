@@ -10,7 +10,16 @@ permissions:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        include:
+          - os: macos-latest
+            name: mac
+          - os: windows-latest
+            name: win
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,16 +30,17 @@ jobs:
         run: deno task compile
       - name: Pack
         run: |
-          cp coeiroink-v2-bridge.exe ./build_resources/
+          cp coeiroink-v2-bridge.exe ./build_resources/ || true
+          cp coeiroink-v2-bridge ./build_resources/ || true
           cp providers/icon.png ./build_resources/
           cd build_resources
-          compress-archive * ../coeiroink-bridge-${{ github.ref_name }}.vvpp
+          compress-archive * ../coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.vvpp
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            coeiroink-bridge-${{ github.ref_name }}.vvpp
+            coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.vvpp
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
