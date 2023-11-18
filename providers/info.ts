@@ -19,7 +19,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", async (c) => {
     await baseClient.get("");
 
-    return c.json("0.1.0");
+    return c.json("0.1.1");
   });
 
   app.get(
@@ -51,6 +51,14 @@ const infoProvider: Provider = ({ baseClient, app }) => {
             "この下のアップデート内容はCOEIROINK v2 bridgeのものです。",
           ],
           contributors: [],
+        },
+        {
+          version: "0.1.1",
+          descriptions: [
+            "Add: Mac版ビルドを追加",
+            "Fix: ユーザー辞書周りを修正",
+          ],
+          contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.1.0",
