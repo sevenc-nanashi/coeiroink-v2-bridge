@@ -36,7 +36,7 @@ jobs:
           cp providers/icon.png ./build_resources/
           cd build_resources
           7z a -tzip coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.zip *
-          mv coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.zip coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.vvpp
+          mv coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.zip ../coeiroink-bridge-${{ github.ref_name }}-${{ matrix.name }}.vvpp
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
