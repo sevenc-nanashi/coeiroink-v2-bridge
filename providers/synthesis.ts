@@ -1,5 +1,5 @@
 import { Provider } from "./index.ts";
-import { getSpeakerFromId } from "../speakerMap.ts";
+import { getSpeakerFromId } from "../store.ts";
 import { AsyncLock, wanakana } from "../deps.ts";
 
 type Prosody = {

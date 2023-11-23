@@ -1,8 +1,9 @@
-import { Hono, honoLogger, ky, parse, serve } from "./deps.ts";
+import { dirname, Hono, honoLogger, ky, parse, serve } from "./deps.ts";
 import dictProvider from "./providers/dict.ts";
 import infoProvider from "./providers/info.ts";
 import noopProvider from "./providers/noop.ts";
 import synthesisProvider from "./providers/synthesis.ts";
+import { saveStore, store } from "./store.ts";
 
 const args = parse(Deno.args, {
   string: ["host", "port", "originalUrl"],
@@ -15,6 +16,56 @@ const args = parse(Deno.args, {
 const baseClient = ky.create({
   prefixUrl: args.originalUrl,
 });
+
+if (store.enginePath != undefined) {
+  if (await baseClient.get("").catch(() => null)) {
+    console.log("The server is already running, not starting the engine.");
+  } else if (Deno.stat(store.enginePath).catch(() => null) == undefined) {
+    console.log(
+      `The engine path ${store.enginePath} does not exist, not starting the engine.`,
+    );
+    store.enginePath = undefined;
+  } else {
+    console.log(`Starting the engine at ${store.enginePath}...`);
+    new Deno.Command(
+      store.enginePath,
+      {
+        stdout: "inherit",
+        stderr: "inherit",
+      },
+    ).spawn();
+  }
+} else {
+  console.log("No engine path, not starting the engine.");
+}
+
+while (true) {
+  try {
+    await baseClient.get("");
+    break;
+  } catch {
+    console.log("Waiting for the server to be ready...");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+}
+
+const speakers: {
+  speakerUuid: string;
+}[] = await baseClient.get("v1/speakers").json();
+const path: {
+  speakerFolderPath: string;
+} = await baseClient.get("v1/speaker_folder_path", {
+  searchParams: {
+    speakerUuid: speakers[0].speakerUuid,
+  },
+}).json();
+const speakerFolderPath = path.speakerFolderPath;
+const enginePath = dirname(dirname(speakerFolderPath)) + "/engine/engine.exe";
+
+console.log(`Engine path: ${enginePath}`);
+
+store.enginePath = enginePath;
+await saveStore();
 
 const app = new Hono();
 

@@ -1,5 +1,5 @@
 import { dirname, toBase64 } from "../deps.ts";
-import { getIdFromSpeaker, getOrAppendSpeaker } from "../speakerMap.ts";
+import { getIdFromSpeaker, getOrAppendSpeaker } from "../store.ts";
 import { Provider } from "./index.ts";
 
 let speakers: {
