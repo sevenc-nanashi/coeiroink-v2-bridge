@@ -27,13 +27,16 @@ if (store.enginePath != undefined) {
     store.enginePath = undefined;
   } else {
     console.log(`Starting the engine at ${store.enginePath}...`);
-    new Deno.Command(
+    const process = new Deno.Command(
       store.enginePath,
       {
         stdout: "inherit",
         stderr: "inherit",
       },
     ).spawn();
+    self.addEventListener("unload", () => {
+      process.kill();
+    });
   }
 } else {
   console.log("No engine path, not starting the engine.");

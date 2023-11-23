@@ -83,38 +83,33 @@ const prosodyToAccentPhrases = (prosody: Prosody) => {
 const accentPhrasesToProsody = (accentPhrases: AccentPhrase[]) => {
   return accentPhrases.map((accentPhrase) => {
     const detail = [];
-    let hasPause = false;
 
     accentPhrase.moras.forEach((mora, i) => {
-      if (mora.text === "、") {
-        hasPause = true;
+      let phoneme;
+      if (mora.consonant && mora.consonant.length > 0) {
+        phoneme = `${mora.consonant}-${mora.vowel}`;
       } else {
-        let phoneme;
-        if (mora.consonant && mora.consonant.length > 0) {
-          phoneme = `${mora.consonant}-${mora.vowel}`;
-        } else {
-          phoneme = mora.vowel;
-        }
-
-        let accent = 0;
-        if (
-          i === accentPhrase.accent - 1 ||
-          (i !== 0 && i <= accentPhrase.accent - 1)
-        ) {
-          accent = 1;
-        }
-
-        detail.push({
-          hira: wanakana.toHiragana(
-            mora.text,
-          ),
-          phoneme,
-          accent,
-        });
+        phoneme = mora.vowel;
       }
+
+      let accent = 0;
+      if (
+        i === accentPhrase.accent - 1 ||
+        (i !== 0 && i <= accentPhrase.accent - 1)
+      ) {
+        accent = 1;
+      }
+
+      detail.push({
+        hira: wanakana.toHiragana(
+          mora.text,
+        ),
+        phoneme,
+        accent,
+      });
     });
 
-    if (hasPause) {
+    if (accentPhrase.pause_mora) {
       detail.push({
         hira: "、",
         phoneme: "_",

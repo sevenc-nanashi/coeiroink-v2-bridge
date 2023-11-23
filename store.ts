@@ -45,5 +45,6 @@ export const getOrAppendSpeaker = async (
 };
 
 export const saveStore = async () => {
-  await Deno.writeTextFile(filePath, JSON.stringify(store));
+  await Deno.writeTextFile(filePath + ".tmp", JSON.stringify(store));
+  await Deno.rename(filePath + ".tmp", filePath);
 };
