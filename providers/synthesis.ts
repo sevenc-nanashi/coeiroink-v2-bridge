@@ -1,7 +1,6 @@
 import { Provider } from "./index.ts";
-import { Readable } from "node:stream";
-import { Buffer } from "node:buffer";
 import { getSpeakerFromId } from "../speakerMap.ts";
+import { AsyncLock, wanakana } from "../deps.ts";
 
 type Prosody = {
   plain: string[];
@@ -25,6 +24,8 @@ type AccentPhrase = {
   is_interrogative: boolean;
   pause_mora: Mora | null;
 };
+
+const synthesisLock = new AsyncLock();
 
 const prosodyToAccentPhrases = (prosody: Prosody) => {
   const result: AccentPhrase[] = [];
@@ -52,7 +53,9 @@ const prosodyToAccentPhrases = (prosody: Prosody) => {
           vowel = m.phoneme;
         }
         moras.push({
-          text: m.hira,
+          text: wanakana.toKatakana(
+            m.hira,
+          ),
           consonant,
           consonant_length: consonant ? 0 : null,
           vowel,
@@ -102,7 +105,9 @@ const accentPhrasesToProsody = (accentPhrases: AccentPhrase[]) => {
         }
 
         detail.push({
-          hira: mora.text,
+          hira: wanakana.toHiragana(
+            mora.text,
+          ),
           phoneme,
           accent,
         });
@@ -158,46 +163,49 @@ const synthesisProvider: Provider = ({ baseClient, app }) => {
     });
   });
   app.post("/synthesis", async (c) => {
-    const audioQuery = await c.req.json();
-    const speakerId = parseInt(c.req.query("speaker") ?? "");
-    if (isNaN(speakerId)) {
-      c.status(400);
-      return c.json({
-        error: "speaker is not a number",
+    return await synthesisLock.acquire("lock", async () => {
+      const audioQuery = await c.req.json();
+      const speakerId = parseInt(c.req.query("speaker") ?? "");
+      if (isNaN(speakerId)) {
+        c.status(400);
+        return c.json({
+          error: "speaker is not a number",
+        });
+      }
+      const accentPhrases = audioQuery.accent_phrases;
+      const prosody = accentPhrasesToProsody(accentPhrases);
+      const [speakerUuid, styleId] = getSpeakerFromId(speakerId) ?? [];
+      if (!speakerUuid) {
+        c.status(400);
+        return c.json({
+          error: "speaker not found",
+        });
+      }
+      const body = {
+        speakerUuid: speakerUuid,
+        styleId: styleId,
+        text: "この文章が読み上げられているのはバグです。",
+        prosodyDetail: prosody,
+        speedScale: audioQuery.speedScale,
+        volumeScale: audioQuery.volumeScale,
+        pitchScale: audioQuery.pitchScale,
+        intonationScale: audioQuery.intonationScale,
+        prePhonemeLength: audioQuery.prePhonemeLength,
+        postPhonemeLength: audioQuery.postPhonemeLength,
+        outputSamplingRate: audioQuery.outputSamplingRate,
+      };
+      const result = await baseClient.post("v1/synthesis", {
+        json: body,
+        timeout: false,
       });
-    }
-    const accentPhrases = audioQuery.accent_phrases;
-    const prosody = accentPhrasesToProsody(accentPhrases);
-    const [speakerUuid, styleId] = getSpeakerFromId(speakerId) ?? [];
-    if (!speakerUuid) {
-      c.status(400);
-      return c.json({
-        error: "speaker not found",
-      });
-    }
-    const body = {
-      speakerUuid: speakerUuid,
-      styleId: styleId,
-      text: "この文章が読み上げられているのはバグです。",
-      prosodyDetail: prosody,
-      speedScale: audioQuery.speedScale,
-      volumeScale: audioQuery.volumeScale,
-      pitchScale: audioQuery.pitchScale,
-      intonationScale: audioQuery.intonationScale,
-      prePhonemeLength: audioQuery.prePhonemeLength,
-      postPhonemeLength: audioQuery.postPhonemeLength,
-      outputSamplingRate: audioQuery.outputSamplingRate,
-    };
-    const result = await baseClient.post("v1/synthesis", {
-      json: body,
+      if (!result.ok) {
+        c.status(500);
+        return c.json({
+          error: "synthesis failed",
+        });
+      }
+      return c.body(result.body);
     });
-    if (!result.ok) {
-      c.status(500);
-      return c.json({
-        error: "synthesis failed",
-      });
-    }
-    return c.body(result.body);
   });
 };
 
