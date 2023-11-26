@@ -1,5 +1,4 @@
 import { dirname, toBase64 } from "../deps.ts";
-import { getIdFromSpeaker, getOrAppendSpeaker } from "../store.ts";
 import { Provider } from "./index.ts";
 
 let speakers: {
@@ -19,7 +18,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", async (c) => {
     await baseClient.get("");
 
-    return c.json("0.1.1");
+    return c.json("0.2.0");
   });
 
   app.get(
@@ -51,6 +50,28 @@ const infoProvider: Provider = ({ baseClient, app }) => {
             "この下のアップデート内容はCOEIROINK v2 bridgeのものです。",
           ],
           contributors: [],
+        },
+        {
+          version: "0.2.0",
+          descriptions: [
+            "Change: Coeiroink側のstyleIdを使うように変更",
+          ],
+          contributors: ["sevenc-nanashi"],
+        },
+        {
+          version: "0.1.3",
+          descriptions: [
+            "Fix: 読点周りの挙動を修正",
+          ],
+          contributors: ["sevenc-nanashi"],
+        },
+        {
+          version: "0.1.2",
+          descriptions: [
+            "Add: mutexを追加",
+            "Add: 自動起動を追加",
+          ],
+          contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.1.1",
@@ -102,19 +123,15 @@ const infoProvider: Provider = ({ baseClient, app }) => {
     speakers = await baseClient.get("v1/speakers").json();
 
     return c.json(
-      await Promise.all(
-        speakers.map(async (speaker) => ({
-          name: speaker.speakerName,
-          speaker_uuid: speaker.speakerUuid,
-          styles: await Promise.all(
-            speaker.styles.map(async (style) => ({
-              name: style.styleName,
-              id: await getOrAppendSpeaker(speaker.speakerUuid, style.styleId),
-            })),
-          ),
-          version: speaker.version,
+      speakers.map((speaker) => ({
+        name: speaker.speakerName,
+        speaker_uuid: speaker.speakerUuid,
+        styles: speaker.styles.map((style) => ({
+          name: style.styleName,
+          id: style.styleId,
         })),
-      ),
+        version: speaker.version,
+      })),
     );
   });
 
@@ -131,7 +148,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
       policy: "https://coeiroink.com/terms を参照して下さい。",
       portrait: speaker.base64Portrait,
       style_infos: speaker.styles.map((style) => ({
-        id: getIdFromSpeaker(speakerUuid, style.styleId),
+        id: style.styleId,
         icon: style.base64Icon,
         portrait: style.base64Portrait,
         voice_samples: [],

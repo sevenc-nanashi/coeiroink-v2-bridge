@@ -1,5 +1,4 @@
 import { Provider } from "./index.ts";
-import { getSpeakerFromId } from "../store.ts";
 import { AsyncLock, wanakana } from "../deps.ts";
 
 type Prosody = {
@@ -169,7 +168,21 @@ const synthesisProvider: Provider = ({ baseClient, app }) => {
       }
       const accentPhrases = audioQuery.accent_phrases;
       const prosody = accentPhrasesToProsody(accentPhrases);
-      const [speakerUuid, styleId] = getSpeakerFromId(speakerId) ?? [];
+      const speakers = await baseClient.get("v1/speakers").json<{
+        speakerUuid: string;
+        styles: {
+          styleId: number;
+        }[];
+      }[]>();
+      let speakerUuid: string | undefined;
+      let styleId: number | undefined;
+      for (const speaker of speakers) {
+        if (speaker.styles.find((style) => style.styleId === speakerId)) {
+          speakerUuid = speaker.speakerUuid;
+          styleId = speakerId;
+          break;
+        }
+      }
       if (!speakerUuid) {
         c.status(400);
         return c.json({
