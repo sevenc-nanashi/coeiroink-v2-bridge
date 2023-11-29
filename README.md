@@ -12,6 +12,10 @@ COEIROINK v2 を VOICEVOX のマルチエンジンで読み込めるようにす
 2. vvpp を VOICEVOX に読み込ませる
 3. COEIROINK v2 を起動する
 
+## TODO
+
+- [ ] v2のピッチ調整機能（中心を0として上下で制御する？）
+
 ## 開発
 
 ### 実行
