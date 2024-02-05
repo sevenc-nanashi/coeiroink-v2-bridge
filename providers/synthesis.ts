@@ -192,7 +192,10 @@ const synthesisProvider: Provider = ({ baseClient, app }) => {
       const body = {
         speakerUuid: speakerUuid,
         styleId: styleId,
-        text: "この文章が読み上げられているのはバグです。",
+        // TODO: 無音はここより前で返すようにしたい
+        text: accentPhrases.length > 0
+          ? "この文章が読み上げられているのはバグです。"
+          : "",
         prosodyDetail: prosody,
         speedScale: audioQuery.speedScale,
         volumeScale: audioQuery.volumeScale,
