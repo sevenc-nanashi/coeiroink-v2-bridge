@@ -18,7 +18,7 @@ const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", async (c) => {
     await baseClient.get("");
 
-    return c.json("0.2.0");
+    return c.json("0.2.1");
   });
 
   app.get(
@@ -50,6 +50,13 @@ const infoProvider: Provider = ({ baseClient, app }) => {
             "この下のアップデート内容はCOEIROINK v2 bridgeのものです。",
           ],
           contributors: [],
+        },
+        {
+          version: "0.2.1",
+          descriptions: [
+            "Fix: 空のAccentPhraseで無音を返すように",
+          ],
+          contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.2.0",
