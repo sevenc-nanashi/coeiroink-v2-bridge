@@ -1,4 +1,5 @@
-import { Hono, ky } from "../deps.ts";
+import { Hono } from "hono/mod.ts";
+import ky from "ky";
 
 export type Provider = ({
   baseClient,

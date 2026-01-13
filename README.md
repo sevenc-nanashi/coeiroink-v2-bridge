@@ -8,7 +8,8 @@ COEIROINK v2 を VOICEVOX のマルチエンジンで読み込めるようにす
 
 ## 使い方
 
-1. [Releases](https://github.com/sevenc-nanashi/coeiroink-v2-bridge/releases) から最新の `coeiroink-v2-v0.0.0.vvpp` をダウンロードする
+1. [Releases](https://github.com/sevenc-nanashi/coeiroink-v2-bridge/releases)
+   から最新の `coeiroink-v2-v0.0.0.vvpp` をダウンロードする
 2. vvpp を VOICEVOX に読み込ませる
 3. COEIROINK v2 を起動する
 

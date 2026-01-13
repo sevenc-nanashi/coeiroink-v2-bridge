@@ -1,5 +1,8 @@
 import { Provider } from "./index.ts";
-import { AsyncLock, wanakana } from "../deps.ts";
+// @ts-types="npm:@types/async-lock@1.4.2"
+import AsyncLock from "async-lock";
+// @ts-types="npm:@types/wanakana@4.0.6"
+import wanakana from "wanakana";
 
 type Prosody = {
   plain: string[];

@@ -1,4 +1,5 @@
-import { homeDir } from "./deps.ts";
+import osPaths from "os_paths";
+const homeDir = osPaths.home();
 
 type Store = {
   enginePath: string | undefined;

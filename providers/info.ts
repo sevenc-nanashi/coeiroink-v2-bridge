@@ -1,4 +1,5 @@
-import { dirname, toBase64 } from "../deps.ts";
+import { dirname } from "std/path/mod.ts";
+import { fromUint8Array as toBase64 } from "base64";
 import { Provider } from "./index.ts";
 
 let speakers: {
@@ -18,12 +19,11 @@ const infoProvider: Provider = ({ baseClient, app }) => {
   app.get("/version", async (c) => {
     await baseClient.get("");
 
-    return c.json("0.2.1");
+    return c.json("0.3.0");
   });
 
-  app.get(
-    "/supported_devices",
-    (c) => c.json({ cpu: true, cuda: false, dml: false }),
+  app.get("/supported_devices", (c) =>
+    c.json({ cpu: true, cuda: false, dml: false }),
   );
 
   app.get("/engine_manifest", async (c) => {
@@ -33,13 +33,12 @@ const infoProvider: Provider = ({ baseClient, app }) => {
       brand_name: "COEIROINK v2",
       uuid: "96755ba9-6c9d-4166-aaf3-86633dfa0ca5",
       url: "https://github.com/sevenc-nanashi/coeiroink-v2-bridge",
+      version: "0.3.0",
       icon: await Deno.readFile(
         Deno.execPath().endsWith("deno.exe")
           ? new URL("./icon.png", import.meta.url)
           : dirname(Deno.execPath()) + "/icon.png",
-      ).then(
-        (buf) => toBase64(buf),
-      ),
+      ).then((buf) => toBase64(buf)),
       default_sampling_rate: 24000,
       terms_of_service: "https://coeiroink.com/terms を参照して下さい。",
       update_infos: [
@@ -52,32 +51,28 @@ const infoProvider: Provider = ({ baseClient, app }) => {
           contributors: [],
         },
         {
+          version: "0.3.0",
+          descriptions: ["fix: versionフィールドを修正"],
+          contributors: ["sevenc-nanashi"],
+        },
+        {
           version: "0.2.1",
-          descriptions: [
-            "Fix: 空のAccentPhraseで無音を返すように",
-          ],
+          descriptions: ["Fix: 空のAccentPhraseで無音を返すように"],
           contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.2.0",
-          descriptions: [
-            "Change: Coeiroink側のstyleIdを使うように変更",
-          ],
+          descriptions: ["Change: Coeiroink側のstyleIdを使うように変更"],
           contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.1.3",
-          descriptions: [
-            "Fix: 読点周りの挙動を修正",
-          ],
+          descriptions: ["Fix: 読点周りの挙動を修正"],
           contributors: ["sevenc-nanashi"],
         },
         {
           version: "0.1.2",
-          descriptions: [
-            "Add: mutexを追加",
-            "Add: 自動起動を追加",
-          ],
+          descriptions: ["Add: mutexを追加", "Add: 自動起動を追加"],
           contributors: ["sevenc-nanashi"],
         },
         {

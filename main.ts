@@ -1,4 +1,9 @@
-import { dirname, Hono, honoLogger, ky, parse, serve } from "./deps.ts";
+import { dirname } from "std/path/mod.ts";
+import { Hono } from "hono/mod.ts";
+import { logger as honoLogger } from "hono/middleware.ts";
+import ky from "ky";
+import { parse } from "std/flags/mod.ts";
+import { serve } from "std/http/server.ts";
 import dictProvider from "./providers/dict.ts";
 import infoProvider from "./providers/info.ts";
 import noopProvider from "./providers/noop.ts";

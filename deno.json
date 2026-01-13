@@ -4,5 +4,14 @@
     "start": "deno run --allow-net --allow-run --allow-env --allow-read --allow-write main.ts",
     "compile": "deno compile --allow-net --allow-run --allow-env --allow-read --allow-write -o coeiroink-v2-bridge main.ts"
   },
+  "imports": {
+    "hono/": "https://deno.land/x/hono@v3.2.3/",
+    "std/": "https://deno.land/std@0.190.0/",
+    "ky": "https://esm.sh/ky@0.33.2",
+    "base64": "https://deno.land/x/base64@v0.2.1/mod.ts",
+    "async-lock": "npm:async-lock@1.4.0",
+    "wanakana": "npm:wanakana@5.2.0",
+    "os_paths": "https://deno.land/x/os_paths@v7.4.0/src/mod.deno.ts"
+  },
   "lock": false
 }
